@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GamePot JS SDK Sandbox</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- IE 11 을 위한 추가 -->
+    <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js"></script>
+    <script src="https://cdn.gamepot.io/dev/gamepot-sdk-javascript-1.0.12.min.js"></script>
+  </head>
+
+  <body class="container-fluid" style="margin-bottom: 200px;">
+    <script type="text/javascript">
+      let userId = "";
+      let token = "";
+      function openIdentity() {
+        GP.Identity("61d075b0aa289337e4c71e89", { token: "token" }, function (
+          resp
+        ) {
+          if (resp.success) {
+            alert(resp.orderId); // orderId 를 가지고 API Server 에  인증 관룐값을 가져올 수 있습니다.
+          } else {
+            alert(resp.error);
+          }
+        });
+      }
+      function Payment(key) {
+        GP.Payment(
+          key,
+          {
+            userId: "dde19b69-9a2d-4025-aa38-49cd4075b3d7",
+            itemId: "ITM0001",
+            name: "구슬아이템#1",
+            amount: 3000,
+            buyer_name: "홍길동",
+            buyer_email: "o@gamepot.io",
+            playerId: "playerId",
+            serverId: "serverId",
+            userdata: "userData"
+          },
+          function (resp) {
+            console.log(resp);
+            if (resp.success) {
+              alert(resp.orderId); // orderId 를 가지고 API Server 에 인증 값을 가져올 수 있습니다.
+            } else {
+              alert(resp.error);
+            }
+          }
+        );
+      }
+      function SignIn(channeltype) {
+        // GP.setBackendSave(false);
+        GP.login(channeltype, function (user, error) {
+          if (error) {
+            // 로그아웃 실패
+            alert(`${error.code}-${error.message}`); // 오류 메세지
+          } else {
+            // 로그인 성공
+            userId = user.id;
+            token = user.token;
+            alert(user.id);
+            alert(user.token);
+            alert(user.provider);
+            // alert(user.projectId);
+            // alert(user.email);
+            // alert(user.agree);
+            // alert(user.verify);
+          }
+        });
+      }
+      function Start() {
+        alert("게임시작");
+      }
+      function Logout() {
+        GP.logout(function (result, error) {
+          if (error) {
+            // 로그아웃 실패
+            alert(error); // 오류 메세지
+          } else {
+            // 로그아웃 아웃 완료
+            alert("logout");
+          }
+        });
+      }
+      function deleteMember() {
+        if (!userId) {
+          alert("로그인을 먼저 해 주세요.");
+          return;
+        }
+        GP.deleteMember(userId, function (result, error) {
+          if (error) {
+            // 회원탈퇴 실패
+            alert(error); // 오류 메세지
+          } else {
+            // 회원탈퇴 아웃 완료
+            alert("unsigned");
+          }
+        });
+      }
+
+      window.onload = function () {
+        var project_id = "d7bf9edd-e452-4ce3-8b85-c69381f26ef4"; // demo
+        var gamepotConfig = {
+          google_signin_client_id:
+            "174271126062-52ucs7hlfk5m041tiqv39ik973aa5370.apps.googleusercontent.com",
+          facebook_app_id: "251953953658594",
+          apple_client_id: "com.nbp.sweetsugargamepot.webauth",
+          apple_redirect_uri: "https://localhost/callback/",
+          kakao_client_id: "5ca59626b1f34b2f73192dfe261412fd",
+          plugin_url: "https://alpha-plugin.gamepot.io/v1/apps",
+          api_url: "https://alpha-api.gamepot.io",
+          api_key: "431188e5071bcfe84634745b397c489b371d516810389a41"
+        };
+
+        // 애플로그인은 아직 설정이 필요하다는 회신 받음.
+        // 개발환경 - 엑솔라 결제시에는 임시로 api_url: "https://dev-gravity-api.gamepot.io",
+        // var project_id = "b13e639c-60ad-4075-ad89-a72571bac720"; // ROV 개발 게임팟 대시보드 프로젝트 아이디
+        // var project_id = "bacb4f76-d987-4ec1-bc52-c4d89686e0c3"; // ROV 상용 게임팟 대시보드 프로젝트 아이디
+        // var gamepotConfig = {
+        //   plugin_url: "https://alpha-plugin.gamepot.io/v1/apps",
+        //   api_url: "https://gravity-api.gamepot.io",
+        //   google_signin_client_id:
+        //     "107565187826-l959lbmnkf25pn0v521squ77d1e3cud1.apps.googleusercontent.com",
+        //   facebook_app_id: "251953953658594",
+        //   apple_client_id: "com.gravity.vu.web.signin",
+        //   apple_redirect_uri: "https://sbfoh.csb.app"
+        // };
+        GP.initialize(project_id, gamepotConfig);
+      };
+    </script>
+    <div>
+      <div>소셜 로그인23sdsdsdsd</div>
+      <button
+        id="btn-signin-google"
+        class=""
+        onclick="SignIn(GP.ChannelType.GOOGLE)"
+      >
+        구글
+      </button>
+      <button
+        id="btn-signin-facebook"
+        class=""
+        onclick="SignIn(GP.ChannelType.FACEBOOK)"
+      >
+        페이스북
+      </button>
+
+      <button
+        id="btn-signin-apple"
+        class=""
+        onclick="SignIn(GP.ChannelType.APPLE)"
+      >
+        애플
+      </button>
+
+      <button
+        id="btn-signin-kakao"
+        class=""
+        onclick="SignIn(GP.ChannelType.KAKAO)"
+      >
+        카카오톡
+      </button>
+
+      <button id="btn-signin-kakao" class="" onclick="openIdentity()">
+        본인인증
+      </button>
+
+      <button id="btn-logout" class="" onclick="Logout()">로그아웃</button>
+      <button id="btn-logout" class="" onclick="deleteMember()">
+        회원탈퇴
+      </button>
+    </div>
+    <div>
+      <div>PG</div>
+      <button
+        id="btn-pg-danal-hp"
+        class=""
+        onclick="Payment('61ee23c57de339d9c625a918');"
+      >
+        다날(핸드폰)
+      </button>
+      <button
+        id="btn-pg-danal-card"
+        class=""
+        onclick="Payment('61ef7614b68b7c4718c94ebd');"
+      >
+        다날(카드)
+      </button>
+
+      <button
+        id="btn-pg-xsolla"
+        class=""
+        onclick="Payment('61efaab82636fb1c0dc06cca');"
+      >
+        엑솔라
+      </button>
+      <button
+        id="btn-pg-mycard"
+        class=""
+        onclick="Payment('61f352692515a2bfe9acc9ee');"
+      >
+        마이카드
+      </button>
+    </div>
+    <button id="btn-pg-mycard" class="" onclick="javascript:Start();">
+      게임시작
+    </button>
+    <pre id="debug-log" style="font-size: 0.5em;"></pre>
+  </body>
+</html>
